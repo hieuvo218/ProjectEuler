@@ -1,0 +1,13 @@
+[project]
+name = "helloworld"
+version = "0.1.0"
+description = "This project is used to learned uv"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx",
+    "scikit-learn>=1.6.0",
+]
+
+[tool.uv.sources]
+httpx = { git = "https://github.com/encode/httpx" }
