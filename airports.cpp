@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <stack>
 #include <utility>
+#include <tuple>
 
 using namespace std;
 
@@ -34,7 +35,47 @@ void assign(int node, int root, const vector<vector<int>> &readjacent_airports, 
     }
 }
 
-int solve(string start_airport, const vector<string> &airports, const vector<pair<string, string>> &routes)
+struct information{
+    int index;
+    int lowLink;
+    int onStack;
+};
+
+int * strong_connect(information &v, int index, stack<int> &s, vector<vector<int>> &adjacent_airports, int *component) {
+    return component;
+}
+
+int solve_with_tarjan(string start_airport, const vector<string> &airports, const vector<pair<string, string>> &routes) {
+    int n = airports.size(); 
+    unordered_map<string, information> mp;   
+    vector<vector<int>> adjacent_airports(n);
+
+    // construct a map from name of airport to its id
+    for (int i = 0; i < airports.size(); i++) {
+        mp[airports[i]] = information{-1, 0, 0};
+    }
+
+    // Construct adjacent list
+    for (int i = 0; i < routes.size(); i++) {
+        adjacent_airports[mp[routes[i].first]].push_back(mp[routes[i].second]);
+    }
+
+    // Use Tarjan's algorithm to find strongly connected component
+    // Save the following information (index, lowlink, instack)
+    int index = 0;
+    stack<int> s;
+    for (int i = 0; i < n; i++)
+        if (mp[airports[i]].index == -1)
+            strong_connect(mp[airports[i]])
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < adjacent_airports.size(); j++) {
+            if 
+        }
+    }
+}
+
+int solve_with_kosaraju(string start_airport, const vector<string> &airports, const vector<pair<string, string>> &routes)
 {
     int n = airports.size();    
     unordered_map<string, int> mp;
