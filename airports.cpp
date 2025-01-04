@@ -9,8 +9,10 @@
 #include <functional>
 #include <unordered_map>
 #include <algorithm>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 // visit function to visit each node in the graph by using dfs traversal and push each node to stack
 // according to its finish time
@@ -63,19 +65,17 @@ int solve_with_tarjan(string start_airport, const vector<string> &airports, cons
     unordered_map<information*, vector<information*>, InformationHash> adjacent_list(n);
     // Global variables
     int index = 0;
-    stack<information> s;
+    stack<information*> s;
     int component[n];
     fill_n(component, n, -1);
 
     // construct a map from name of airport to its id
-    for (int i = 0; i < airports.size(); i++) {
+    for (int i = 0; i < airports.size(); i++)
         mp[airports[i]] = information{i, -1, 0, 0};
-    }
 
     // Construct adjacent list in format of (airport1, [airport2, airport3, ...])
-    for (int i = 0; i < routes.size(); i++) {
+    for (int i = 0; i < routes.size(); i++)
         adjacent_list[&mp[routes[i].first]].push_back(&mp[routes[i].second]);
-    }
 
     // Use Tarjan's algorithm to find strongly connected component
     // Save the following information (index, lowlink, instack)
@@ -85,7 +85,7 @@ int solve_with_tarjan(string start_airport, const vector<string> &airports, cons
         v->lowLink = index;
         v->onStack = true;
         index++;
-        s.push(*v);
+        s.push(v);
 
         // Consider successors of v
         for (information *w : adjacent_list[v]) {
@@ -104,20 +104,18 @@ int solve_with_tarjan(string start_airport, const vector<string> &airports, cons
 
         // If v is a root node, pop the stack and generate an SCC
         if (v->lowLink == v->index) {
-            while(s.top().id != v->id) {
-                information w = s.top();
+            while(s.top()->id != v->id) {
+                information* w = s.top();
                 s.pop();
-                w.onStack = 0;
-                w.lowLink = n;
+                w->onStack = 0;
                 // Add node to SCC
-                component[w.id] = v->id;
+                component[w->id] = v->id;
             }
-            information w = s.top();
+            information* w = s.top();
             s.pop();
-            w.onStack = 0;
-            w.lowLink = n;
+            w->onStack = 0;
             // Add node to SCC
-            component[w.id] = v->id;
+            component[w->id] = v->id;
         }
     };
 
@@ -223,8 +221,22 @@ int main() {
                                      {"SFO", "SAN"},
                                      {"SFO", "DSM"},
                                      {"SAN", "EYW"}};
-    int res = solve_with_kosaraju(start_airport, airports, routes);
-    cout << res << endl;
+    
+    // Tarjan's algorithm
+    auto start = std::chrono::high_resolution_clock::now();
+    int res = solve_with_tarjan(start_airport, airports, routes);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    cout << "Duration: " << duration.count() << endl;
+    cout << "Result: " << res << endl;
+    
+    // Kosaraju's algorithm
+    start = std::chrono::high_resolution_clock::now();
+    res = solve_with_kosaraju(start_airport, airports, routes);
+    stop = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    cout << "Duration: " << duration.count() << endl;
+    cout << "Result: " << res << endl;
 
     return 0;
 }
